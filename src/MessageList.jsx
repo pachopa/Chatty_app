@@ -4,13 +4,16 @@ import Message from './Message.jsx';
 class MessageList extends Component {
   
   render() {
-    console.log("Rendering <MessageList/>");
+    const messageList = this.props.messageList;
     return (
       <main className="messages">
-        <Message />
+        {messageList.map((item, index) => ( 
+        <Message key={index} Name={item.username} Message={item.content}/>
+        ))}
       </main>
     );
   }
 }
 
 export default MessageList;
+
