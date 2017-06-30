@@ -11,7 +11,6 @@ class ChatBar extends Component {
 
   newUserName(event) {
     if(event.key === 'Enter') {
-      console.log(event.target.value, "chatbar.jsx")
       this.props.updateUserName(event.target.value);
     } 
   }
