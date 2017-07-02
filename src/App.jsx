@@ -7,10 +7,10 @@ class App extends Component {
     super(props);
     this.socket = this.createSocketFunction()
     this.state = {
-      currentUser: {name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
+      currentUser: {name: 'Anonymous'}, // optional. if currentUser is not defined, it means the user is Anonymous
       messages: [],
       usercount: 0,
-      styles: "",
+      styles: '',
       id: []
     }
     this.newMessage = this.newMessage.bind(this);
@@ -23,20 +23,19 @@ class App extends Component {
     socket.onmessage = (event) => {
       const newMessage = JSON.parse(event.data);
       switch(newMessage.type) {
-        case "incomingMessage":
+        case 'incomingMessage':
           // handle incoming message
           var messages = this.state.messages.concat(newMessage)
           this.setState({messages: messages});
           break;
-        case "incomingNotification":
+        case 'incomingNotification':
           //handle incomingNotification
-          var messages = this.state.messages.concat(newMessage)
-          this.setState({messages: messages});
-          var msgLength = messages.length;
+          var notificationMessages = this.state.messages.concat(newMessage)
+          this.setState({messages: notificationMessages});
           break;
         case 'incomingUser':
           //handle incomingUser
-          const userInformation = {"id": newMessage.id, "count": newMessage.count}
+          const userInformation = {'id': newMessage.id, 'count': newMessage.count}
           this.setState({usercount: newMessage.count});
           if(this.state.id.length < newMessage.count) {
             this.setState(() => {
@@ -46,9 +45,9 @@ class App extends Component {
           break;
         default:
           // show an error in the console if the message type is unknown
-          throw new Error("Unknown event type " + newMessage.type);
+          throw new Error('Unknown event type ' + newMessage.type);
       }
-      window.scrollTo(0, document.querySelector(".messages").scrollHeight);
+      window.scrollTo(0, document.querySelector('.messages').scrollHeight);
     }
     return socket;
   }
@@ -62,7 +61,6 @@ class App extends Component {
 
   newMessage(content) {
     // Add a new message to the list of messages in the data store
-    console.log("newMessage function: ", this.state.id)
     const newMessage = {id: this.state.id, type: 'postMessage', username: this.state.currentUser.name, content: content};
     this.socket.send(JSON.stringify(newMessage));
   }

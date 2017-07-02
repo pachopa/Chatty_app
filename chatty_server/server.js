@@ -46,7 +46,7 @@ wss.countUser = function countUser(data) {
     id : uuidv1(),
     styles: wss.randomColorFunction()
   }
-  userInformation[usersNum.id] = {"id": usersNum.id, "styles": usersNum.styles, "count": usersNum.count}
+  userInformation[usersNum.id] = {'id': usersNum.id, 'styles': usersNum.styles, 'count': usersNum.count}
   return usersNum;
 }
 
