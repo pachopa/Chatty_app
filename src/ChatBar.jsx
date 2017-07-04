@@ -12,7 +12,7 @@ class ChatBar extends Component {
   newUserName(event) {
     if(event.key === 'Enter') {
       this.props.updateUserName(event.target.value);
-    } 
+    }
   }
 
   render() {

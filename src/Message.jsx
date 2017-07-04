@@ -2,19 +2,19 @@ import React, {Component} from 'react';
 
 class Message extends Component {
   render() {
-    const styles = this.props.styles
+    const color = this.props.color;
     return (
       <div>
         {(() => {
           switch (this.props.type) {
-            case "incomingNotification":   
+            case 'incomingNotification':   
               return <div className="message system">
-                      <span>{this.props.Message}</span>
+                      <span>{this.props.message}</span>
                      </div>;
             default:      
               return <div className="message">
-                        <span className="message-username" style={{color: styles}}>{this.props.Name}</span>
-                        <span className="message-content">{this.props.Message}</span>
+                        <span className="message-username" style={{color: color}}>{this.props.name}</span>
+                        <span className="message-content">{this.props.message}</span>
                       </div>;
           }
         })()}

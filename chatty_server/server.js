@@ -1,8 +1,7 @@
-// server.js
+const uuidv1 = require('uuid/v1');
 const express = require('express');
-const SocketServer = require('ws').Server;
 const WebSocket = require('ws');
-// Set the port to 3001
+const SocketServer = WebSocket.Server;
 const PORT = 3001;
 
 // Create a new express server
@@ -13,10 +12,8 @@ const server = express()
 
 // Create the WebSockets server
 const wss = new SocketServer({ server });
-const uuidv1 = require('uuid/v1');
 
-//user Information
-const userInformation = {};
+
 
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
@@ -31,50 +28,49 @@ wss.broadcast = function broadcast(data) {
   });
 };
 
-wss.randomColorFunction = function randomColorFunction() {
+function randomColorFunction() {
   //generate random font color
   const randomColor = Math.floor(Math.random()*16777215).toString(16);
   const cssRandomColor = '#' + randomColor;
   return cssRandomColor;
 }
 
-wss.countUser = function countUser(data) {
+function broadcastUsersCount() {
   //counting for users how many people are connected.
   const usersNum = {
     type : 'incomingUser',
-    count : data,
-    id : uuidv1(),
-    styles: wss.randomColorFunction()
+    count : wss.clients.size,
+    id : uuidv1()
   }
-  userInformation[usersNum.id] = {'id': usersNum.id, 'styles': usersNum.styles, 'count': usersNum.count}
-  return usersNum;
+  wss.broadcast(JSON.stringify(usersNum)); 
 }
 
 wss.on('connection', (ws) => {
   //connet between server and client side
-  const userCount = wss.countUser(wss.clients.size);
-  wss.broadcast(JSON.stringify(userCount)); 
-  
+  broadcastUsersCount();  
+  const color = randomColorFunction();
   ws.on('message', (messages) => {
-    const Msg = JSON.parse(messages);
-    if(Msg.type === 'postNotification') {
-      Msg.type = 'incomingNotification'
-      wss.broadcast(JSON.stringify(Msg));
-    } 
-    if(Msg.type === 'postMessage'){
-      for(var userid in userInformation) {
-        if(userInformation[userid].count === Msg.id[0].count) {
-          Msg.styles = userInformation[userid].styles;
-        }
-      }
-      Msg.type = 'incomingMessage'
-      wss.broadcast(JSON.stringify(Msg)); 
+    let msg;
+    
+    try {
+       msg = JSON.parse(messages);
+    } catch (err) {
+      console.error(err);
+      return ;
     }
+    msg.id = uuidv1();
+    if(msg.type === 'postNotification') {
+      msg.type = 'incomingNotification'
+    } 
+    if(msg.type === 'postMessage'){
+      msg.color = color;
+      msg.type = 'incomingMessage' 
+    }
+    wss.broadcast(JSON.stringify(msg));
   })
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => {
-    const userCount = wss.countUser(wss.clients.size);
-    wss.broadcast(JSON.stringify(userCount)); 
+    broadcastUsersCount();
   });
 });
